@@ -1,0 +1,28 @@
+/* FIX CONTAINER HEIGHTS */
+html, body,
+#app-container,
+#app-inner {
+  height: 100% !important;
+  position: relative !important;
+}
+
+html {
+  /* Adjust font size */
+  font-size: 100%;
+  -webkit-text-size-adjust: 100%;
+  /* Font varient */
+  font-variant-ligatures: none;
+  -webkit-font-variant-ligatures: none;
+  /* Smoothing */
+  text-rendering: optimizeLegibility;
+  -moz-osx-font-smoothing: grayscale;
+  font-smoothing: antialiased;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  font-family: Roboto, sans-serif !important;
+}
