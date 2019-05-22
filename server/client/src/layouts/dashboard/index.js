@@ -21,81 +21,10 @@ import ListItemText from "@material-ui/core/ListItemText";
 import InboxIcon from "@material-ui/icons/MoveToInbox";
 import MailIcon from "@material-ui/icons/Mail";
 
-const drawerWidth = 240;
+// Layout styles
+import styles from "./styles";
+
 const mql = window.matchMedia("(min-width: 1024px)");
-
-const styles = theme => {
-  // Keep for further theming
-  console.log(theme);
-
-  return {
-    root: {
-      display: "flex"
-    },
-    appBar: {
-      zIndex: theme.zIndex.drawer + 1,
-      transition: theme.transitions.create(["width", "margin"], {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.leavingScreen
-      })
-    },
-    appBarShift: {
-      marginLeft: drawerWidth,
-      width: `calc(100% - ${drawerWidth}px)`,
-      transition: theme.transitions.create(["width", "margin"], {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.enteringScreen
-      })
-    },
-    menuAppName: {
-      flexGrow: 1
-    },
-    menuButton: {
-      marginLeft: theme.spacing.unit - 2,
-      marginRight: theme.spacing.unit - 2
-    },
-    hide: {
-      display: "none"
-    },
-    drawer: {
-      width: drawerWidth,
-      flexShrink: 0,
-      whiteSpace: "nowrap"
-    },
-    drawerOpen: {
-      width: drawerWidth,
-      transition: theme.transitions.create("width", {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.enteringScreen
-      })
-    },
-    drawerClose: {
-      transition: theme.transitions.create("width", {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.leavingScreen
-      }),
-      overflowX: "hidden",
-      width: theme.spacing.unit * 7 - 2,
-      [theme.breakpoints.up("sm")]: {
-        width: theme.spacing.unit * 7 - 2
-      }
-    },
-    drawerPaper: {
-      ...theme.mixins.drawerPaper
-    },
-    toolbar: {
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "flex-end",
-      padding: "0 8px",
-      ...theme.mixins.toolbar
-    },
-    content: {
-      flexGrow: 1,
-      padding: theme.spacing.unit * 3
-    }
-  };
-};
 
 class DashboardLayout extends React.Component {
   state = {

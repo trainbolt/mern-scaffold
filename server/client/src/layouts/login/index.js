@@ -8,7 +8,7 @@ import { withStyles } from "@material-ui/core/styles";
 import { Grid, IconButton, Typography } from "@material-ui/core";
 import { ArrowBack as ArrowBackIcon } from "@material-ui/icons";
 
-// Component styles
+// Layout styles
 import styles from "./styles";
 
 const mql = window.matchMedia("(min-width: 1024px)");
