@@ -2,27 +2,31 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { Router } from "react-router-dom";
 import { Provider } from "react-redux";
-import { PersistGate } from "redux-persist/integration/react";
+import { createStore, applyMiddleware } from "redux";
+import reduxThunk from "redux-thunk";
+import { composeWithDevTools } from "redux-devtools-extension/developmentOnly";
 import { MuiThemeProvider } from "@material-ui/core/styles";
-
-// Theme
 import theme from "./theme";
 
 import App from "./App";
+import reducers from "./reducers";
 import history from "./history";
-import { store, persistor } from "./store";
 
 import "./assets/styles/index.scss";
 
+const store = createStore(
+  reducers,
+  {},
+  composeWithDevTools(applyMiddleware(reduxThunk))
+);
+
 ReactDOM.render(
   <Provider store={store}>
-    <PersistGate loading={null} persistor={persistor}>
-      <MuiThemeProvider theme={theme}>
-        <Router history={history}>
-          <App />
-        </Router>
-      </MuiThemeProvider>
-    </PersistGate>
+    <MuiThemeProvider theme={theme}>
+      <Router history={history}>
+        <App />
+      </Router>
+    </MuiThemeProvider>
   </Provider>,
   document.querySelector("#root")
 );
