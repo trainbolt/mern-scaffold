@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { Formik } from "formik";
+import { spacing } from "@material-ui/system";
 
 // Material helpers
 import { withStyles } from "@material-ui/core";
@@ -10,7 +11,7 @@ import { withStyles } from "@material-ui/core";
 import { Button, TextField, Typography } from "@material-ui/core";
 
 // Actions
-import UserActions from "../../actions/user";
+import AuthActions from "../../actions/auth";
 
 // Component styles
 import styles from "../../layouts/login/styles";
@@ -85,6 +86,7 @@ class Login extends React.Component {
               size="large"
               variant="contained"
               fullWidth
+              mt={8}
             >
               Login
             </Button>
@@ -110,7 +112,7 @@ Login.propTypes = {
 
 const mapDispatchToProps = dispatch => {
   return {
-    loginUser: user => dispatch(UserActions.login(user))
+    loginUser: user => dispatch(AuthActions.login(user))
   };
 };
 

@@ -68,10 +68,7 @@ class LoginLayout extends React.Component {
 }
 
 LoginLayout.propTypes = {
-  className: PropTypes.string,
-  classes: PropTypes.object.isRequired,
-  theme: PropTypes.object.isRequired,
-  history: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired
 };
 
 export default withStyles(styles, { withTheme: true })(LoginLayout);

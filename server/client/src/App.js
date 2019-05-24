@@ -9,7 +9,7 @@ import LoginLayoutRoute from "./routes/LoginLayoutRoute";
 import DashboardLayoutRoute from "./routes/DashboardLayoutRoute";
 
 // Actions
-import UserActions from "./actions/user";
+import AuthActions from "./actions/auth";
 
 // Routes
 import MainApp from "./routes";
@@ -25,28 +25,28 @@ class App extends Component {
   };
 
   componentDidMount() {
-    this.props.checkLoginStatus(this.props.user.token);
+    this.props.checkLoginStatus(localStorage.getItem("JWT"));
   }
 
   render() {
-    const { user } = this.props;
+    const { auth } = this.props;
 
     return (
       <Switch>
         <Route path="/" exact>
           <Redirect to="/login" />
         </Route>
-        <LoginLayoutRoute path="/login" exact user={user} component={Login} />
+        <LoginLayoutRoute path="/login" exact auth={auth} component={Login} />
         <LoginLayoutRoute
           path="/register"
           exact
-          user={user}
+          auth={auth}
           component={Register}
         />
         <DashboardLayoutRoute
           path="/app/dashboard"
           exact
-          user={user}
+          auth={auth}
           component={Dashboard}
         />
       </Switch>
@@ -54,13 +54,13 @@ class App extends Component {
   }
 }
 
-const mapStateToProps = ({ user }) => {
-  return { user };
+const mapStateToProps = ({ auth }) => {
+  return { auth };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
-    checkLoginStatus: token => dispatch(UserActions.checkLoginStatus(token))
+    checkLoginStatus: token => dispatch(AuthActions.checkLoginStatus(token))
   };
 };
 

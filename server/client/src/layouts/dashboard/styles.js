@@ -1,3 +1,4 @@
+import spacing from "../../theme/spacing";
 const drawerWidth = 240;
 
 export default theme => ({
@@ -47,9 +48,9 @@ export default theme => ({
       duration: theme.transitions.duration.leavingScreen
     }),
     overflowX: "hidden",
-    width: theme.spacing.unit * 7 - 2,
+    width: spacing(7) - 2,
     [theme.breakpoints.up("sm")]: {
-      width: theme.spacing.unit * 7 - 2
+      width: spacing(7) - 2
     }
   },
   drawerPaper: {
@@ -64,6 +65,6 @@ export default theme => ({
   },
   content: {
     flexGrow: 1,
-    padding: theme.spacing.unit * 3
+    padding: spacing(3)
   }
 });

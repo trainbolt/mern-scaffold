@@ -1,9 +1,9 @@
-import spacing from "@material-ui/core/styles/spacing";
+import spacing from "../spacing";
 
 export default {
   root: {
     paddingRight: 0,
-    paddingLeft: spacing.unit * 2
+    paddingLeft: spacing.spacing * 2
   },
   primary: {
     fontSize: 13

@@ -11,7 +11,7 @@ import { withStyles } from "@material-ui/core";
 import { Button, TextField, Typography } from "@material-ui/core";
 
 // Actions
-import UserActions from "../../actions/user";
+import AuthActions from "../../actions/auth";
 
 // Component styles
 import styles from "../../layouts/login/styles";
@@ -158,7 +158,7 @@ Register.propTypes = {
 
 const mapDispatchToProps = dispatch => {
   return {
-    registerUser: newUser => dispatch(UserActions.register(newUser))
+    registerUser: newUser => dispatch(AuthActions.register(newUser))
   };
 };
 

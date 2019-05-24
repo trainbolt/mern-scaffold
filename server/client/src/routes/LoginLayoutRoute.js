@@ -2,10 +2,10 @@ import React from "react";
 import { Redirect, Route } from "react-router-dom";
 import LoginLayout from "../layouts/login";
 
-const LoginLayoutRoute = ({ component: Component, user, ...rest }) => {
-  return user.requesting ? (
+const LoginLayoutRoute = ({ component: Component, auth, ...rest }) => {
+  return auth.requesting ? (
     <div>Loading...</div>
-  ) : user.loggedIn ? (
+  ) : auth.loggedIn ? (
     <Redirect to="/app/dashboard" />
   ) : (
     <Route

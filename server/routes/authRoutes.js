@@ -1,96 +1,85 @@
 const express = require("express");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
-const jwt_decode = require("jwt-decode");
+const passport = require("passport");
 const bcrypt = require("bcrypt");
-const users = express.Router();
+const auth = express.Router();
 
 const keys = require("../config/keys");
 const User = require("../models/User");
 
-users.use(cors());
+auth.use(cors());
 
-users.post("/register", async (req, res) => {
-  const dateNow = new Date();
-  const userData = {
-    first_name: req.body.first_name,
-    last_name: req.body.last_name,
-    email: req.body.email,
-    password: req.body.password,
-    createdAt: dateNow
-  };
+auth.get("/checkLoginStatus", () => {});
 
-  console.log("userData: ", userData);
-
-  const user = await User.findOne({
-    where: {
-      email: req.body.email
+auth.post("/login", (req, res, next) => {
+  passport.authenticate("login", (err, users, info) => {
+    if (err) {
+      console.error(`error ${err}`);
     }
-  });
-
-  console.log("user: ", user);
-
-  if (!user) {
-    console.log("no user exists");
-    bcrypt.hash(req.body.password, 10, (err, hash) => {
-      userData.password = hash;
-      console.log("userData", userData);
-      User.create(userData)
-        .then(user => {
-          let token = jwt.sign(user.dataValues, keys.SECRET_KEY, {
-            expiresIn: "1 day"
-          });
-          res.send(token);
-          res.redirect("/app/dashboard");
-        })
-        .catch(err => {
-          res.send(`error: ${err}`);
-        });
-    });
-  } else {
-    res.json({
-      error: "User already exists"
-    });
-  }
-});
-
-users.post("/login", (req, res) => {
-  User.findOne({
-    where: {
-      email: req.body.email
-    }
-  })
-    .then(user => {
-      if (user) {
-        if (bcrypt.compareSync(req.body.password, user.password)) {
-          let token = jwt.sign(user.dataValues, keys.SECRET_KEY, {
-            expiresIn: "1 day"
-          });
-          res.send(token);
-        }
+    if (info !== undefined) {
+      console.error(info.message);
+      if (info.message === "bad username") {
+        res.status(401).send(info.message);
       } else {
-        res.status(400).json({
-          error: "Incorrect login details"
-        });
+        res.status(403).send(info.message);
       }
-    })
-    .catch(err => {
-      res.status(400).json({
-        error: err
+    } else {
+      req.logIn(users, () => {
+        User.findOne({
+          where: {
+            email: req.body.email
+          }
+        }).then(user => {
+          if (user) {
+            if (bcrypt.compareSync(req.body.password, user.password)) {
+              const token = jwt.sign({ id: user.id }, keys.SECRET_KEY);
+              delete user.password;
+              res.status(200).send({
+                user,
+                token,
+                message: "user found & logged in"
+              });
+            }
+          }
+        });
       });
-    });
+    }
+  })(req, res, next);
 });
 
-users.get("/logout", (req, res) => {
-  req.logout();
-  res.redirect("/");
+auth.post("/register", (req, res, next) => {
+  passport.authenticate("register", (err, user, info) => {
+    if (err) {
+      console.error(err);
+    }
+    if (info !== undefined) {
+      console.error(info.message);
+      res.status(403).send(info.message);
+    } else {
+      // eslint-disable-next-line no-unused-vars
+      req.logIn(user, error => {
+        const dateNow = new Date();
+        const userData = {
+          first_name: req.body.first_name,
+          last_name: req.body.last_name,
+          email: req.body.email,
+          createdAt: dateNow
+        };
+        User.findOne({
+          where: {
+            email: userData.email
+          }
+        }).then(user => {
+          console.log(user);
+          user.update(userData).then(() => {
+            console.log("user created in db");
+            res.status(200).send({ message: "user created" });
+          });
+        });
+      });
+    }
+  })(req, res, next);
 });
 
-users.get("/logged_in", (req, res) => {
-  jwt.verify(req.token, keys.SECRET_KEY, err => {
-    const status = err ? 401 : 200;
-    res.sendStatus(status);
-  });
-});
-
-module.exports = users;
+module.exports = auth;

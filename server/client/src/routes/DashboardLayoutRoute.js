@@ -2,10 +2,10 @@ import React from "react";
 import { Route, Redirect } from "react-router-dom";
 import DashboardLayout from "../layouts/dashboard";
 
-const DashboardLayoutRoute = ({ component: Component, user, ...rest }) => {
-  return user.requesting ? (
+const DashboardLayoutRoute = ({ component: Component, auth, ...rest }) => {
+  return auth.requesting ? (
     <div>Loading...</div>
-  ) : !user.loggedIn ? (
+  ) : !auth.loggedIn ? (
     <Redirect to="/login" />
   ) : (
     <Route
