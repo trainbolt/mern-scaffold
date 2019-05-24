@@ -10,7 +10,7 @@ const authActions = {
     const failure = error => ({ type: types.USER_FAILURE, payload: error });
 
     return async dispatch => {
-      if (token === "") {
+      if (!token) {
         return dispatch(missing());
       }
 
