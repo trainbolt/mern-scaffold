@@ -5,19 +5,22 @@ import classNames from "classnames";
 import { withStyles } from "@material-ui/core/styles";
 
 // Material UI
-import Drawer from "@material-ui/core/Drawer";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import List from "@material-ui/core/List";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import Typography from "@material-ui/core/Typography";
-import Divider from "@material-ui/core/Divider";
-import IconButton from "@material-ui/core/IconButton";
+import {
+  AppBar,
+  Box,
+  CssBaseline,
+  Divider,
+  Drawer,
+  IconButton,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Toolbar,
+  Typography
+} from "@material-ui/core";
 import MenuIcon from "@material-ui/icons/Menu";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
 import InboxIcon from "@material-ui/icons/MoveToInbox";
 import MailIcon from "@material-ui/icons/Mail";
 
@@ -31,10 +34,12 @@ class DashboardLayout extends React.Component {
     mql,
     drawers: {
       sideMenu: {
-        open: false
+        open: false,
+        variant: "permanent"
       },
       accountMenu: {
-        open: false
+        open: false,
+        variant: "temporary"
       }
     }
   };
@@ -52,12 +57,14 @@ class DashboardLayout extends React.Component {
   }
 
   mediaQueryChanged = () => {
+    const match = this.state.mql.matches;
     this.setState({
       ...this.state,
       drawers: {
         ...this.state.drawers,
         sideMenu: {
-          open: this.state.mql.matches
+          open: match,
+          variant: match ? "permanent" : "temporary"
         }
       }
     });
@@ -78,6 +85,7 @@ class DashboardLayout extends React.Component {
       drawers: {
         ...this.state.drawers,
         [drawer]: {
+          ...this.state.drawers[drawer],
           open: open
         }
       }
@@ -86,8 +94,8 @@ class DashboardLayout extends React.Component {
 
   render() {
     const { classes } = this.props;
-    const sideMenuOpen = this.state.drawers.sideMenu.open;
-    const accountMenuOpen = this.state.drawers.accountMenu.open;
+    const sideMenu = this.state.drawers.sideMenu;
+    const accountMenu = this.state.drawers.accountMenu;
 
     return (
       <div className={classes.root}>
@@ -95,16 +103,17 @@ class DashboardLayout extends React.Component {
         <AppBar
           position="fixed"
           className={classNames(classes.appBar, {
-            [classes.appBarShift]: sideMenuOpen
+            [classes.appBarShift]: sideMenu.open
           })}
         >
-          <Toolbar disableGutters={!sideMenuOpen}>
+          <Toolbar disableGutters={!sideMenu.open}>
             <IconButton
               color="inherit"
               aria-label="Open drawer"
               onClick={this.toggleDrawer("sideMenu", true)}
               className={classNames(classes.menuButton, {
-                [classes.hide]: sideMenuOpen
+                [classes.brandNameHide]: sideMenu.open,
+                [classes.brandNameShow]: !sideMenu.open
               })}
             >
               <MenuIcon />
@@ -113,7 +122,10 @@ class DashboardLayout extends React.Component {
               variant="h5"
               color="inherit"
               noWrap
-              className={classNames({ [classes.hide]: sideMenuOpen })}
+              className={classNames({
+                [classes.brandNameHide]: sideMenu.open,
+                [classes.brandNameShow]: !sideMenu.open
+              })}
             >
               App Name
             </Typography>
@@ -121,7 +133,8 @@ class DashboardLayout extends React.Component {
         </AppBar>
         <Drawer
           anchor="right"
-          open={accountMenuOpen}
+          open={accountMenu.open}
+          variant={accountMenu.variant}
           onClose={this.toggleDrawer("accountMenu", false)}
         >
           <div
@@ -156,27 +169,28 @@ class DashboardLayout extends React.Component {
           </div>
         </Drawer>
         <Drawer
-          variant="permanent"
+          variant={sideMenu.variant}
           className={classNames(classes.drawer, {
-            [classes.drawerOpen]: sideMenuOpen,
-            [classes.drawerClose]: !sideMenuOpen
+            [classes.drawerOpen]: sideMenu.open,
+            [classes.drawerClose]: !sideMenu.open
           })}
           classes={{
             paper: classNames(classes.drawerPaper, {
-              [classes.drawerOpen]: sideMenuOpen,
-              [classes.drawerClose]: !sideMenuOpen
+              [classes.drawerOpen]: sideMenu.open,
+              [classes.drawerClose]: !sideMenu.open,
+              [classes.drawerPaperTemporary]: sideMenu.variant === "temporary"
             })
           }}
-          open={sideMenuOpen}
+          open={sideMenu.open}
         >
           <AppBar position="fixed" className={classNames(classes.appBar)}>
-            <Toolbar disableGutters={sideMenuOpen}>
+            <Toolbar disableGutters={sideMenu.open}>
               <IconButton
                 color="inherit"
                 aria-label="Open drawer"
                 onClick={this.toggleDrawer("sideMenu", false)}
                 className={classNames(classes.menuButton, {
-                  [classes.hide]: !sideMenuOpen
+                  [classes.hide]: !sideMenu.open
                 })}
               >
                 <ChevronLeftIcon />
@@ -185,7 +199,7 @@ class DashboardLayout extends React.Component {
                 variant="h5"
                 color="inherit"
                 noWrap
-                className={classNames({ [classes.hide]: !sideMenuOpen })}
+                className={classNames({ [classes.hide]: !sideMenu.open })}
               >
                 App Name
               </Typography>

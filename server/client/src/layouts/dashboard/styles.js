@@ -9,7 +9,7 @@ export default theme => ({
     zIndex: theme.zIndex.drawer + 1,
     transition: theme.transitions.create(["width", "margin"], {
       easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen
+      duration: theme.transitions.duration.leavingScreen - 120
     })
   },
   appBarShift: {
@@ -35,6 +35,20 @@ export default theme => ({
     flexShrink: 0,
     whiteSpace: "nowrap"
   },
+  brandNameHide: {
+    opacity: 0,
+    transition: theme.transitions.create("opacity", {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.enteringScreen
+    })
+  },
+  brandNameShow: {
+    opacity: 1,
+    transition: theme.transitions.create("opacity", {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen
+    })
+  },
   drawerOpen: {
     width: drawerWidth,
     transition: theme.transitions.create("width", {
@@ -54,7 +68,16 @@ export default theme => ({
     }
   },
   drawerPaper: {
-    ...theme.mixins.drawerPaper
+    "@media (min-width:0px) and (orientation: landscape)": {
+      top: spacing(6)
+    },
+    "@media (min-width:600px)": {
+      top: spacing(8)
+    },
+    top: spacing(7)
+  },
+  drawerPaperTemporary: {
+    top: 0
   },
   toolbar: {
     display: "flex",
