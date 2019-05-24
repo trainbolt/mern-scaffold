@@ -3,7 +3,7 @@ const Sequelize = require("sequelize");
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
 const JWTstrategy = require("passport-jwt").Strategy;
-const ExtractJWT = require("passport-jwt").ExtractJwt;
+const ExtractJwt = require("passport-jwt").ExtractJwt;
 
 const BCRYPT_SALT_ROUNDS = 12;
 const Op = Sequelize.Op;
@@ -87,8 +87,17 @@ passport.use(
   )
 );
 
+function cookieExtractor(req) {
+  var token = null;
+  if (req && req.cookies) {
+    token = req.cookies["token"];
+  }
+  console.log("extracted token: ", token);
+  return token;
+}
+
 const opts = {
-  jwtFromRequest: ExtractJWT.fromAuthHeaderWithScheme("JWT"),
+  jwtFromRequest: cookieExtractor,
   secretOrKey: keys.SECRET_KEY
 };
 
@@ -102,6 +111,7 @@ passport.use(
         }
       }).then(user => {
         if (user) {
+          console.log("user: ", user.id);
           console.log("user found in db in passport");
           done(null, user);
         } else {

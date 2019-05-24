@@ -25,7 +25,7 @@ class App extends Component {
   };
 
   componentDidMount() {
-    this.props.checkLoginStatus(localStorage.getItem("JWT"));
+    this.props.checkLoginStatus(1);
   }
 
   render() {

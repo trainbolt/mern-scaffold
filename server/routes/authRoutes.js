@@ -10,7 +10,46 @@ const User = require("../models/User");
 
 auth.use(cors());
 
-auth.get("/checkLoginStatus", () => {});
+auth.get("/checkLoginStatus", (req, res, next) => {
+  console.log("hit the check login status route.");
+  passport.authenticate("jwt", { session: false }, (err, user, info) => {
+    if (err) {
+      console.log(err);
+    }
+
+    const id = parseInt(req.query.id, 10);
+
+    if (info !== undefined) {
+      console.log(info.message);
+      res.status(401).send(info.message);
+    } else if (user.id === id) {
+      User.findOne({
+        where: {
+          id
+        }
+      }).then(userInfo => {
+        if (userInfo != null) {
+          console.log("user found in db from findUsers");
+          res.status(200).send({
+            auth: true,
+            first_name: userInfo.first_name,
+            last_name: userInfo.last_name,
+            email: userInfo.email,
+            username: userInfo.username,
+            password: userInfo.password,
+            message: "user found in db"
+          });
+        } else {
+          console.error("no user exists in db with that username");
+          res.status(401).send("no user exists in db with that username");
+        }
+      });
+    } else {
+      console.error("jwt id and username do not match");
+      res.status(403).send("username and jwt token do not match");
+    }
+  })(req, res, next);
+});
 
 auth.post("/login", (req, res, next) => {
   passport.authenticate("login", (err, users, info) => {
@@ -35,11 +74,13 @@ auth.post("/login", (req, res, next) => {
             if (bcrypt.compareSync(req.body.password, user.password)) {
               const token = jwt.sign({ id: user.id }, keys.SECRET_KEY);
               delete user.password;
-              res.status(200).send({
-                user,
-                token,
-                message: "user found & logged in"
-              });
+              res
+                .status(200)
+                .cookie("token", token, { maxAge: 24 * 60 * 60 * 1000 }) // 24 hours
+                .send({
+                  user,
+                  message: "user found & logged in"
+                });
             }
           }
         });

@@ -1,9 +1,10 @@
 import * as types from "../actions/types";
 
 const initialState = {
-  loggedIn: false,
   requesting: true,
-  error: ""
+  loggedIn: false,
+  user: null,
+  error: null
 };
 
 export default function(state = initialState, action) {
@@ -12,21 +13,36 @@ export default function(state = initialState, action) {
   switch (action.type) {
     // CHECK LOGIN STATUS
     case types.MISSING_TOKEN:
-      return { ...state, loggedIn: false, requesting: false };
+      return {
+        ...state,
+        requesting: false,
+        loggedIn: false,
+        user: null
+      };
+
     case types.USER_REQUEST:
-      return { ...state, requesting: true };
+      return {
+        ...state,
+        requesting: true
+      };
+
     case types.USER_SUCCESS:
       return {
         ...state,
-        loggedIn: true,
         requesting: false,
+        loggedIn: true,
+        user: {
+          ...(state.user || action.payload.user)
+        },
         error: ""
       };
+
     case types.USER_FAILURE:
       return {
         ...state,
         requesting: false,
         loggedIn: false,
+        user: null,
         error: action.payload
       };
 
@@ -41,21 +57,22 @@ export default function(state = initialState, action) {
     // LOGIN
     case types.LOGIN_REQUEST:
       return { ...state, requesting: true };
+
     case types.LOGIN_SUCCESS:
-      console.log("action.payload", action.payload);
-      localStorage.setItem("JWT", action.payload.token);
       return {
         ...state,
-        loggedIn: true,
         requesting: false,
+        loggedIn: true,
+        user: action.payload.user,
         error: ""
       };
+
     case types.LOGIN_FAILURE:
-      localStorage.removeItem("JWT");
       return {
-        ...state,
+        ...initialState,
         loggedIn: false,
         requesting: false,
+        user: null,
         error: action.payload
       };
 

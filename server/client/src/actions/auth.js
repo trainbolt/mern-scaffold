@@ -2,22 +2,24 @@ import axios from "axios";
 import history from "../history";
 import * as types from "./types";
 
+import axiosWithCookies from "../utilities/axiosWithCookies";
+
 const authActions = {
-  checkLoginStatus: token => {
+  checkLoginStatus: id => {
     const missing = () => ({ type: types.MISSING_TOKEN });
     const request = () => ({ type: types.USER_REQUEST });
     const success = user => ({ type: types.USER_SUCCESS, payload: user });
     const failure = error => ({ type: types.USER_FAILURE, payload: error });
 
     return async dispatch => {
-      if (!token) {
+      if (!id) {
         return dispatch(missing());
       }
 
       dispatch(request());
       try {
-        const res = await axios.get("/auth/checkLoginStatus", {
-          params: {}
+        const res = await axiosWithCookies.get("/auth/checkLoginStatus", {
+          params: { id }
         });
         dispatch(success(res.data));
       } catch (e) {
