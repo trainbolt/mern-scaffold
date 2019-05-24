@@ -29,7 +29,14 @@ const mql = window.matchMedia("(min-width: 1024px)");
 class DashboardLayout extends React.Component {
   state = {
     mql,
-    open: false
+    drawers: {
+      sideMenu: {
+        open: false
+      },
+      accountMenu: {
+        open: false
+      }
+    }
   };
 
   componentWillMount() {
@@ -38,7 +45,6 @@ class DashboardLayout extends React.Component {
 
   componentDidMount() {
     this.mediaQueryChanged();
-    console.log("Dashboard Layout");
   }
 
   componentWillUnmount() {
@@ -47,20 +53,41 @@ class DashboardLayout extends React.Component {
 
   mediaQueryChanged = () => {
     this.setState({
-      open: this.state.mql.matches
+      ...this.state,
+      drawers: {
+        ...this.state.drawers,
+        sideMenu: {
+          open: this.state.mql.matches
+        }
+      }
     });
   };
 
-  handleDrawerOpen = () => {
-    this.setState({ open: true });
-  };
+  toggleDrawer = (drawer, open) => event => {
+    if (
+      drawer !== "sideMenu" ||
+      (event &&
+        event.type === "keydown" &&
+        (event.key === "Tab" || event.key === "Shift"))
+    ) {
+      return;
+    }
 
-  handleDrawerClose = () => {
-    this.setState({ open: false });
+    this.setState({
+      ...this.state,
+      drawers: {
+        ...this.state.drawers,
+        [drawer]: {
+          open: open
+        }
+      }
+    });
   };
 
   render() {
-    const { classes, user } = this.props;
+    const { classes } = this.props;
+    const sideMenuOpen = this.state.drawers.sideMenu.open;
+    const accountMenuOpen = this.state.drawers.accountMenu.open;
 
     return (
       <div className={classes.root}>
@@ -68,16 +95,16 @@ class DashboardLayout extends React.Component {
         <AppBar
           position="fixed"
           className={classNames(classes.appBar, {
-            [classes.appBarShift]: this.state.open
+            [classes.appBarShift]: sideMenuOpen
           })}
         >
-          <Toolbar disableGutters={!this.state.open}>
+          <Toolbar disableGutters={!sideMenuOpen}>
             <IconButton
               color="inherit"
               aria-label="Open drawer"
-              onClick={this.handleDrawerOpen}
+              onClick={this.toggleDrawer("sideMenu", true)}
               className={classNames(classes.menuButton, {
-                [classes.hide]: this.state.open
+                [classes.hide]: sideMenuOpen
               })}
             >
               <MenuIcon />
@@ -86,34 +113,70 @@ class DashboardLayout extends React.Component {
               variant="h5"
               color="inherit"
               noWrap
-              className={classNames({ [classes.hide]: this.state.open })}
+              className={classNames({ [classes.hide]: sideMenuOpen })}
             >
               App Name
             </Typography>
           </Toolbar>
         </AppBar>
         <Drawer
+          anchor="right"
+          open={accountMenuOpen}
+          onClose={this.toggleDrawer("accountMenu", false)}
+        >
+          <div
+            className={classes.fullList}
+            role="presentation"
+            onClick={this.toggleDrawer("accountMenu", false)}
+            onKeyDown={this.toggleDrawer("accountMenu", false)}
+          >
+            <List>
+              {["Inbox", "Starred", "Send email", "Drafts"].map(
+                (text, index) => (
+                  <ListItem button key={text}>
+                    <ListItemIcon>
+                      {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                    </ListItemIcon>
+                    <ListItemText primary={text} />
+                  </ListItem>
+                )
+              )}
+            </List>
+            <Divider />
+            <List>
+              {["All mail", "Trash", "Spam"].map((text, index) => (
+                <ListItem button key={text}>
+                  <ListItemIcon>
+                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                  </ListItemIcon>
+                  <ListItemText primary={text} />
+                </ListItem>
+              ))}
+            </List>
+          </div>
+        </Drawer>
+        <Drawer
           variant="permanent"
           className={classNames(classes.drawer, {
-            [classes.drawerOpen]: this.state.open,
-            [classes.drawerClose]: !this.state.open
+            [classes.drawerOpen]: sideMenuOpen,
+            [classes.drawerClose]: !sideMenuOpen
           })}
           classes={{
             paper: classNames(classes.drawerPaper, {
-              [classes.drawerOpen]: this.state.open,
-              [classes.drawerClose]: !this.state.open
+              [classes.drawerOpen]: sideMenuOpen,
+              [classes.drawerClose]: !sideMenuOpen
             })
           }}
-          open={this.state.open}
+          open={sideMenuOpen}
         >
           <AppBar position="fixed" className={classNames(classes.appBar)}>
-            <Toolbar disableGutters={this.state.open}>
+            <Toolbar disableGutters={sideMenuOpen}>
               <IconButton
                 color="inherit"
                 aria-label="Open drawer"
-                onClick={this.handleDrawerClose}
+                onClick={this.toggleDrawer("sideMenu", false)}
                 className={classNames(classes.menuButton, {
-                  [classes.hide]: !this.state.open
+                  [classes.hide]: !sideMenuOpen
                 })}
               >
                 <ChevronLeftIcon />
@@ -122,7 +185,7 @@ class DashboardLayout extends React.Component {
                 variant="h5"
                 color="inherit"
                 noWrap
-                className={classNames({ [classes.hide]: !this.state.open })}
+                className={classNames({ [classes.hide]: !sideMenuOpen })}
               >
                 App Name
               </Typography>
@@ -165,8 +228,8 @@ DashboardLayout.propTypes = {
   theme: PropTypes.object.isRequired
 };
 
-const mapStateToProps = ({ user }) => {
-  return { user };
+const mapStateToProps = ({ auth }) => {
+  return { auth };
 };
 
 export default withStyles(styles, { withTheme: true })(
