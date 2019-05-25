@@ -6,13 +6,13 @@ const cookieParser = require("cookie-parser");
 const fs = require("fs");
 const http = require("http");
 const https = require("https");
-const privateKey = fs.readFileSync("server/sslcert/server.key", "utf8");
-const certificate = fs.readFileSync("server/sslcert/server.crt", "utf8");
+const privateKey = fs.readFileSync("api/sslcert/server.key", "utf8");
+const certificate = fs.readFileSync("api/sslcert/server.crt", "utf8");
 
 const credentials = { key: privateKey, cert: certificate };
 
 //require("./models/User");
-require("./server/passport/index");
+require("./api/passport");
 
 const app = express();
 app.use(cookieParser());
@@ -29,7 +29,7 @@ app.use(passport.initialize());
  * to add them to /client/setupProxy.js
  */
 
-var auth = require("./server/routes/authRoutes");
+var auth = require("./api/routes/authRoutes");
 app.use("/auth", auth);
 
 if (process.env.NODE_ENV === "production") {
